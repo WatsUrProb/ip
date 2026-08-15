@@ -17,8 +17,12 @@ public class Duke {
         System.out.println("Type your Command Below");
         System.out.println("Or");
         System.out.println("Type -bye- to exit");
+        System.out.println("Or");
+        System.out.println("Type -list- to see your history of commands");
 
-
+        // Create storage
+        String[] tasks = new String[100];
+        int taskCount = 0;
 
 
         //creating the scanner
@@ -28,15 +32,32 @@ public class Duke {
             String input = scanner.nextLine();
             if (input.equals("bye")) {
                 System.out.println("____________________________________________________________");
-                System.out.println("Bye BossSe. Hope to see you again soon!");
+                System.out.println("Bye Boss. Hope to see you again soon!");
                 System.out.println("____________________________________________________________");
                 break;
             }
 
-            System.out.println(line);
-            System.out.println("Let Nova help you with this task: -" + input);
-            System.out.println(line);
+            if (input.equals("list")){
+                System.out.println(line);
+                System.out.println("Your Lists:");
+                for(int i = 0; i < tasks.length; i++){
+                    if (tasks[i]==null){
+                        break;
+                    }
+                    System.out.println("Task "+ (i+1) + ". : " +tasks[i]);
+                    System.out.println("||");
+                }
+                System.out.println(line);
 
+            }
+
+            else{
+                tasks[taskCount] = input;
+                taskCount++;
+                System.out.println(line);
+                System.out.println("Let Nova help you with this task: -" + input);
+                System.out.println(line);
+            }
         }
         scanner.close();
     }
