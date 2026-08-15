@@ -84,61 +84,158 @@ public class Duke {
                 tasks[index].unmarkUndone();
             }
 
-            //Deadline task
-            else if (input.startsWith("deadline ")) {
-
-                String details = input.substring(9);
-
-                String[] parts = details.split(" /by ", 2);
-
-                String description = parts[0];
-                String by = parts[1];
-
-                tasks[taskCount] = new Deadline(description, by);
-                taskCount++;
-
-                System.out.println(line);
-                System.out.println("Got it. I've added this task:");
-                System.out.println("  " + description);
-                System.out.println("Now you have " + taskCount + " tasks in the list.");
-                System.out.println(line);
-            }
-
             //Event task
-            else if (input.startsWith("event ")) {
-                String details = input.substring(6);
-                String[] fromParts = details.split(" /from ", 2);
-                String description = fromParts[0];
-                String[] toParts = fromParts[1].split(" /to ", 2);
-                String from = toParts[0];
-                String to = toParts[1];
-                tasks[taskCount] = new Event(description, from, to);
-                taskCount++;
-                System.out.println(line);
-                System.out.println("Got it. I've added this task:");
-                System.out.println("  " + description);
-                System.out.println("Now you have " + taskCount + " tasks in the list.");
-                System.out.println(line);
+            else if (input.startsWith("event")) {
+                try {
+                    String details = input.substring(5).trim();
+
+                    if (details.isEmpty()) {
+                        throw new NovaException(
+                                "Your event description is missing!\n"
+                                        + "Example: event project meeting /from Mon 2pm /to 4pm"
+                        );
+                    }
+
+                    if (!details.contains(" /from ")) {
+                        throw new NovaException(
+                                "Your event is missing '/from' information!\n"
+                                        + "Example: event project meeting /from Mon 2pm /to 4pm"
+                        );
+                    }
+
+                    if (!details.contains(" /to ")) {
+                        throw new NovaException(
+                                "Your event is missing '/to' information!\n"
+                                        + "Example: event project meeting /from Mon 2pm /to 4pm"
+                        );
+                    }
+
+                    String[] fromParts = details.split(" /from ", 2);
+
+                    String description = fromParts[0].trim();
+
+                    String[] toParts = fromParts[1].split(" /to ", 2);
+
+                    String from = toParts[0].trim();
+                    String to = toParts[1].trim();
+
+                    if (description.isEmpty()) {
+                        throw new NovaException(
+                                "Your event description is missing!"
+                        );
+                    }
+
+                    if (from.isEmpty()) {
+                        throw new NovaException(
+                                "Your event starting time is missing!"
+                        );
+                    }
+
+                    if (to.isEmpty()) {
+                        throw new NovaException(
+                                "Your event ending time is missing!"
+                        );
+                    }
+
+                    tasks[taskCount] = new Event(description, from, to);
+                    taskCount++;
+
+                    System.out.println(line);
+                    System.out.println("Got it. I've added this task:");
+                    System.out.println("  " + tasks[taskCount - 1]);
+                    System.out.println("Now you have " + taskCount + " tasks in the list.");
+                    System.out.println(line);
+
+                } catch (NovaException e) {
+                    System.out.println(line);
+                    System.out.println(e.getMessage());
+                    System.out.println(line);
+                }
+            }
+            //Deadline task
+            else if (input.startsWith("deadline")) {
+                try {
+                    String details = input.substring(8).trim();
+
+                    if (details.isEmpty()) {
+                        throw new NovaException(
+                                "Your deadline description is missing!\n"
+                                        + "Example: deadline return book /by Sunday"
+                        );
+                    }
+
+                    if (!details.contains(" /by ")) {
+                        throw new NovaException(
+                                "Your deadline is missing '/by' information!\n"
+                                        + "Example: deadline return book /by Sunday"
+                        );
+                    }
+
+                    String[] parts = details.split(" /by ", 2);
+
+                    String description = parts[0].trim();
+                    String by = parts[1].trim();
+
+                    if (description.isEmpty()) {
+                        throw new NovaException(
+                                "Your deadline description is missing!\n"
+                                        + "Example: deadline return book /by Sunday"
+                        );
+                    }
+
+                    if (by.isEmpty()) {
+                        throw new NovaException(
+                                "Your deadline date/time is missing!\n"
+                                        + "Example: deadline return book /by Sunday"
+                        );
+                    }
+
+                    tasks[taskCount] = new Deadline(description, by);
+                    taskCount++;
+
+                    System.out.println(line);
+                    System.out.println("Got it. I've added this task:");
+                    System.out.println("  " + tasks[taskCount - 1]);
+                    System.out.println("Now you have " + taskCount + " tasks in the list.");
+                    System.out.println(line);
+
+                } catch (NovaException e) {
+                    System.out.println(line);
+                    System.out.println(e.getMessage());
+                    System.out.println(line);
+                }
             }
 
             //ToDo task
-            else if (input.startsWith("todo ")) {
-                String description = input.substring(5);
-                tasks[taskCount] = new ToDo(description);
-                taskCount++;
-                System.out.println(line);
-                System.out.println("Got it. I've added this task:");
-                System.out.println("  " + description);
-                System.out.println("Now you have " + taskCount + " tasks in the list.");
-                System.out.println(line);
+            else if (input.startsWith("todo")) {
+                try {
+                    String description = input.substring(4);
+                    if (description.isEmpty()) {
+                        throw new NovaException(
+                                "Your todo description is missing!\n"
+                                        + "Example: todo return book"
+                        );
+                    }
+                    tasks[taskCount] = new ToDo(description);
+                    taskCount++;
+                    System.out.println(line);
+                    System.out.println("Got it. I've added this task:");
+                    System.out.println("  " + description);
+                    System.out.println("Now you have " + taskCount + " tasks in the list.");
+                    System.out.println(line);
+                } catch (NovaException e) {
+                    System.out.println(line);
+                    System.out.println(e.getMessage());
+                    System.out.println(line);
+                }
+
             }
 
             //Adding tasks
             else{
-                tasks[taskCount] = new Task(input);
-                taskCount++;
                 System.out.println(line);
-                System.out.println("Let Nova add this task: -" + input);
+                System.out.println("Sorry Boss, NOVA doesn't recognise that command.");
+                System.out.println("Try todo, deadline, event, list, mark, unmark, or bye.");
                 System.out.println(line);
             }
         }
