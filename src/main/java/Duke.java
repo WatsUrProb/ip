@@ -35,6 +35,11 @@ public class Duke {
         System.out.println("Type -mark [task_number]- to mark tasks");
         System.out.println("Or");
         System.out.println("Type -unmark [task_number]- to unmark previously marked tasks");
+        System.out.println(" ");
+        System.out.println("____________________________________________________________");
+        System.out.println("Type -delete [task_number]- to remove tasks");
+        System.out.println("____________________________________________________________");
+
 
 
 
@@ -58,10 +63,10 @@ public class Duke {
             if (input.equals("list")){
                 System.out.println(line);
                 System.out.println("Your Lists:");
-                for(int i = 0; i < tasks.length; i++){
-                    Task Current_Task = tasks[i];
+                for(int i = 0; i < tasks.size(); i++){
+                    Task Current_Task = tasks.get(i);
                     String status;
-                    if (tasks[i] == null){
+                    if (Current_Task == null){
                         break;
                     }
                     System.out.println("Task "+ (i+1) + "--"+ Current_Task.toString());
@@ -75,14 +80,14 @@ public class Duke {
             else if (input.startsWith("mark ")){
                 int Task_number = Integer.parseInt(input.substring(5));
                 int index = Task_number - 1;
-                tasks[index].markDone();
+               tasks.get(index).markDone();
             }
 
             //UNMARK feature
             else if (input.startsWith("unmark ")){
                 int Task_number = Integer.parseInt(input.substring(5));
                 int index = Task_number - 1;
-                tasks[index].unmarkUndone();
+                tasks.get(index).unmarkUndone();
             }
 
             //Event task
@@ -112,11 +117,8 @@ public class Duke {
                     }
 
                     String[] fromParts = details.split(" /from ", 2);
-
                     String description = fromParts[0].trim();
-
                     String[] toParts = fromParts[1].split(" /to ", 2);
-
                     String from = toParts[0].trim();
                     String to = toParts[1].trim();
 
@@ -125,26 +127,23 @@ public class Duke {
                                 "Your event description is missing!"
                         );
                     }
-
                     if (from.isEmpty()) {
                         throw new NovaException(
                                 "Your event starting time is missing!"
                         );
                     }
-
                     if (to.isEmpty()) {
                         throw new NovaException(
                                 "Your event ending time is missing!"
                         );
                     }
 
-                    tasks[taskCount] = new Event(description, from, to);
-                    taskCount++;
+                    tasks.add(new Event(description, from, to));
 
                     System.out.println(line);
                     System.out.println("Got it. I've added this task:");
-                    System.out.println("  " + tasks[taskCount - 1]);
-                    System.out.println("Now you have " + taskCount + " tasks in the list.");
+                    System.out.println("  " + description);
+                    System.out.println("Now you have " + tasks.size() + " tasks in the list.");
                     System.out.println(line);
 
                 } catch (NovaException e) {
@@ -191,13 +190,12 @@ public class Duke {
                         );
                     }
 
-                    tasks[taskCount] = new Deadline(description, by);
-                    taskCount++;
+                    tasks.add(new Deadline(description, by));
 
                     System.out.println(line);
                     System.out.println("Got it. I've added this task:");
-                    System.out.println("  " + tasks[taskCount - 1]);
-                    System.out.println("Now you have " + taskCount + " tasks in the list.");
+                    System.out.println("  " + description);
+                    System.out.println("Now you have " + tasks.size() + " tasks in the list.");
                     System.out.println(line);
 
                 } catch (NovaException e) {
@@ -217,12 +215,11 @@ public class Duke {
                                         + "Example: todo return book"
                         );
                     }
-                    tasks[taskCount] = new ToDo(description);
-                    taskCount++;
+                    tasks.add(new ToDo(description));
                     System.out.println(line);
                     System.out.println("Got it. I've added this task:");
                     System.out.println("  " + description);
-                    System.out.println("Now you have " + taskCount + " tasks in the list.");
+                    System.out.println("Now you have " + tasks.size() + " tasks in the list.");
                     System.out.println(line);
                 } catch (NovaException e) {
                     System.out.println(line);
@@ -232,7 +229,62 @@ public class Duke {
 
             }
 
-            //Adding tasks
+            //Deleting tasks
+            else if (input.startsWith("delete")) {
+                try {
+                    String numberString = input.substring(6).trim();
+                    // User typed only "delete"
+                    if (numberString.isEmpty()) {
+                        throw new NovaException(
+                                "Boss, you forgot to tell me which task to delete!\n"
+                                        + "Example: delete 3"
+                        );
+                    }
+                    int taskNumber = Integer.parseInt(numberString);
+                    int index = taskNumber - 1;
+
+                    // Check whether task number exists
+                    if (index < 0 || index >= tasks.size()) {
+                        throw new NovaException(
+                                "Boss, task " + taskNumber + " doesn't exist!\n"
+                                        + "Please choose a task from 1 to " + tasks.size()
+                        );
+                    }
+
+                    Task removedTask = tasks.remove(index);
+
+                    System.out.println(line);
+                    System.out.println("Noted. I've removed this task:");
+                    System.out.println("  " + removedTask);
+                    System.out.println("Now you have " + tasks.size() + " tasks in the list.");
+                    System.out.println(line);
+
+                } catch (NumberFormatException e) {
+                    System.out.println(line);
+                    System.out.println("Boss, the task number must be a number!");
+                    System.out.println("Example: delete 3");
+                    System.out.println(line);
+
+                } catch (NovaException e) {
+                    System.out.println(line);
+                    System.out.println("Your Lists:");
+                    for(int i = 0; i < tasks.size(); i++){
+                        Task Current_Task = tasks.get(i);
+                        String status;
+                        if (Current_Task == null){
+                            break;
+                        }
+                        System.out.println("Task "+ (i+1) + "--"+ Current_Task.toString());
+                        System.out.println("||");
+                    }
+                    System.out.println(line);
+                    System.out.println(line);
+                    System.out.println(e.getMessage());
+                    System.out.println(line);
+                }
+            }
+
+            //catching subclass error
             else{
                 System.out.println(line);
                 System.out.println("Sorry Boss, NOVA doesn't recognise that command.");
