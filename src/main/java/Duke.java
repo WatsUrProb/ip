@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+import java.util.Scanner;
 import java.util.Scanner;
 
 public class Duke {
@@ -38,8 +40,7 @@ public class Duke {
 
 
         // Create storage for tasks
-        Task[] tasks = new Task[100];
-        int taskCount = 0;
+        ArrayList<Task> tasks = new ArrayList<>();
 
 
         //creating the scanner
