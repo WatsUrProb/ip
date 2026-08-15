@@ -1,5 +1,6 @@
 public class Task {
     protected String description;
+    String line = "____________________________________________________________";
     protected boolean isDone;
 
     public Task(String description) {
@@ -13,6 +14,10 @@ public class Task {
 
     public void  markDone() {
         isDone = true;
+        System.out.println(line);
+        System.out.println("Nice! I've marked this task as done:");
+        System.out.println("[X] " + this.description);
+        System.out.println(line);
     }
     public void unmarkUndone() {
         isDone = false;
@@ -20,7 +25,14 @@ public class Task {
 
     @Override
     public String toString() {
-        return "[ " +this.isDone +" ]";
+        String done_status;
+        if (isDone) {
+            done_status = "[X] ";
+        }
+        else {
+            done_status = "[ ] ";
+        }
+        return done_status + this.description;
     }
 
 

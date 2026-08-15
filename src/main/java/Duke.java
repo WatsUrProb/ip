@@ -15,6 +15,15 @@ public class Duke {
 
         System.out.println("____________________________________________________________");
         System.out.println("Type your Command Below");
+        System.out.println("____________________________________________________________");
+
+        System.out.println("deadline [-description-] /by [-date-]");
+        System.out.println("event [-description-] /from [-date-] /to [-date-]");
+        System.out.println("todo [-description-]");
+        System.out.println("____________________________________________________________");
+
+
+
         System.out.println("Or");
         System.out.println("Type -bye- to exit");
         System.out.println("Or");
@@ -28,12 +37,9 @@ public class Duke {
 
 
 
-        // Create storage
-        String[] tasks = new String[100];
+        // Create storage for tasks
+        Task[] tasks = new Task[100];
         int taskCount = 0;
-
-        //for mark
-        boolean[] isDone = new boolean[100];
 
 
         //creating the scanner
@@ -52,16 +58,12 @@ public class Duke {
                 System.out.println(line);
                 System.out.println("Your Lists:");
                 for(int i = 0; i < tasks.length; i++){
+                    Task Current_Task = tasks[i];
                     String status;
-                    if (tasks[i]==null){
+                    if (tasks[i] == null){
                         break;
                     }
-                    if (isDone[i]){
-                        status = "[X]";
-                    }
-                    else{ status = "[ ]";}
-
-                    System.out.println("Task "+ (i+1) + ". "+ status+" "+ tasks[i]);
+                    System.out.println("Task "+ (i+1) + "--"+ Current_Task.toString());
                     System.out.println("||");
                 }
                 System.out.println(line);
@@ -72,30 +74,71 @@ public class Duke {
             else if (input.startsWith("mark ")){
                 int Task_number = Integer.parseInt(input.substring(5));
                 int index = Task_number - 1;
-                isDone[index] = true;
-                System.out.println(line);
-                System.out.println("Nice! I've marked this task as done:");
-                System.out.println("[X] " + tasks[index]);
-                System.out.println(line);
+                tasks[index].markDone();
             }
 
             //UNMARK feature
             else if (input.startsWith("unmark ")){
                 int Task_number = Integer.parseInt(input.substring(5));
                 int index = Task_number - 1;
-                isDone[index] = false;
+                tasks[index].unmarkUndone();
+            }
+
+            //Deadline task
+            else if (input.startsWith("deadline ")) {
+
+                String details = input.substring(9);
+
+                String[] parts = details.split(" /by ", 2);
+
+                String description = parts[0];
+                String by = parts[1];
+
+                tasks[taskCount] = new Deadline(description, by);
+                taskCount++;
+
                 System.out.println(line);
-                System.out.println("Ok! I've unmarked this task:");
-                System.out.println("[ ] " + tasks[index]);
+                System.out.println("Got it. I've added this task:");
+                System.out.println("  " + description);
+                System.out.println("Now you have " + taskCount + " tasks in the list.");
+                System.out.println(line);
+            }
+
+            //Event task
+            else if (input.startsWith("event ")) {
+                String details = input.substring(6);
+                String[] fromParts = details.split(" /from ", 2);
+                String description = fromParts[0];
+                String[] toParts = fromParts[1].split(" /to ", 2);
+                String from = toParts[0];
+                String to = toParts[1];
+                tasks[taskCount] = new Event(description, from, to);
+                taskCount++;
+                System.out.println(line);
+                System.out.println("Got it. I've added this task:");
+                System.out.println("  " + description);
+                System.out.println("Now you have " + taskCount + " tasks in the list.");
+                System.out.println(line);
+            }
+
+            //ToDo task
+            else if (input.startsWith("todo ")) {
+                String description = input.substring(5);
+                tasks[taskCount] = new ToDo(description);
+                taskCount++;
+                System.out.println(line);
+                System.out.println("Got it. I've added this task:");
+                System.out.println("  " + description);
+                System.out.println("Now you have " + taskCount + " tasks in the list.");
                 System.out.println(line);
             }
 
             //Adding tasks
             else{
-                tasks[taskCount] = input;
+                tasks[taskCount] = new Task(input);
                 taskCount++;
                 System.out.println(line);
-                System.out.println("Let Nova help you with this task: -" + input);
+                System.out.println("Let Nova add this task: -" + input);
                 System.out.println(line);
             }
         }
