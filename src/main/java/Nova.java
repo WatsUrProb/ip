@@ -1,8 +1,12 @@
+import tasks.Deadline;
+import tasks.Event;
+import tasks.Task;
+import tasks.ToDo;
+
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.Scanner;
 
-public class Duke {
+public class Nova {
     public static void main(String[] args) {
         String line = "____________________________________________________________";
         String banner = " _   _  _____     ___    \n"
@@ -69,7 +73,7 @@ public class Duke {
                     if (Current_Task == null){
                         break;
                     }
-                    System.out.println("Task "+ (i+1) + "--"+ Current_Task.toString());
+                    System.out.println("tasks.Task "+ (i+1) + "--"+ Current_Task.toString());
                     System.out.println("||");
                 }
                 System.out.println(line);
@@ -90,7 +94,7 @@ public class Duke {
                 tasks.get(index).unmarkUndone();
             }
 
-            //Event task
+            //tasks.Event task
             else if (input.startsWith("event")) {
                 try {
                     String details = input.substring(5).trim();
@@ -152,7 +156,7 @@ public class Duke {
                     System.out.println(line);
                 }
             }
-            //Deadline task
+            //tasks.Deadline task
             else if (input.startsWith("deadline")) {
                 try {
                     String details = input.substring(8).trim();
@@ -205,7 +209,7 @@ public class Duke {
                 }
             }
 
-            //ToDo task
+            //tasks.ToDo task
             else if (input.startsWith("todo")) {
                 try {
                     String description = input.substring(4);
@@ -274,7 +278,7 @@ public class Duke {
                         if (Current_Task == null){
                             break;
                         }
-                        System.out.println("Task "+ (i+1) + "--"+ Current_Task.toString());
+                        System.out.println("tasks.Task "+ (i+1) + "--"+ Current_Task.toString());
                         System.out.println("||");
                     }
                     System.out.println(line);
