@@ -85,6 +85,10 @@ public class Nova {
                 int Task_number = Integer.parseInt(input.substring(5));
                 int index = Task_number - 1;
                tasks.get(index).markDone();
+                System.out.println(line);
+                System.out.println("Nice! I've marked this task as done:");
+                System.out.println("  " + tasks.get(index));
+                System.out.println(line);
             }
 
             //UNMARK feature
@@ -92,6 +96,11 @@ public class Nova {
                 int Task_number = Integer.parseInt(input.substring(5));
                 int index = Task_number - 1;
                 tasks.get(index).unmarkUndone();
+                System.out.println(line);
+                System.out.println("Ok! I've unmarked this task:");
+                System.out.println("  " + tasks.get(index));
+
+                System.out.println(line);
             }
 
             //tasks.Event task
