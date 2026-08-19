@@ -61,9 +61,11 @@ public class Storage {
 
             else{
                 String description = parts[2].trim();
-                String to = parts[3].trim();
-                String from = parts[4].trim();
-                task = new Event(description, to, from);
+                 String toString = parts[3].trim();
+                 String fromString = parts[4].trim();
+                 LocalDateTime from = LocalDateTime.parse(fromString);
+                 LocalDateTime to = LocalDateTime.parse(toString);
+                task = new Event(description, from, to);
             }
 
             if (isDone){
