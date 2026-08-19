@@ -7,6 +7,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+//Imports for date-time
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+
 public class Nova {
 
     //Helper method to catch exception when doing Storage.save()
@@ -34,8 +39,9 @@ public class Nova {
         System.out.println("Type your Command Below");
         System.out.println("____________________________________________________________");
 
-        System.out.println("deadline [-description-] /by [-date-]");
-        System.out.println("event [-description-] /from [-date-] /to [-date-]");
+        String s = "dd/hh/yyyy";
+        System.out.println("deadline [-description-] /by " + s);
+        System.out.println("event [-description-] /from dd/hh/yyyy /to dd/hh/yyyy");
         System.out.println("todo [-description-]");
         System.out.println("____________________________________________________________");
 
@@ -188,7 +194,7 @@ public class Nova {
 
                 saveTasks(storage, tasks);
             }
-            //tasks.Deadline task
+            //Deadline task
             else if (input.startsWith("deadline")) {
                 try {
                     String details = input.substring(8).trim();
@@ -210,7 +216,7 @@ public class Nova {
                     String[] parts = details.split(" /by ", 2);
 
                     String description = parts[0].trim();
-                    String by = parts[1].trim();
+                    String byString = parts[1].trim();
 
                     if (description.isEmpty()) {
                         throw new NovaException(
@@ -219,12 +225,16 @@ public class Nova {
                         );
                     }
 
-                    if (by.isEmpty()) {
+
+                    if (byString.isEmpty()) {
                         throw new NovaException(
                                 "Your deadline date/time is missing!\n"
                                         + "Example: deadline return book /by Sunday"
                         );
                     }
+                    //COnverting date-time String to format
+                    DateTimeFormatter inputFormat = DateTimeFormatter.ofPattern("d/M/yyyy HHmm");
+                    LocalDateTime by = LocalDateTime.parse(byString, inputFormat);
 
                     tasks.add(new Deadline(description, by));
 
@@ -237,6 +247,16 @@ public class Nova {
                 } catch (NovaException e) {
                     System.out.println(line);
                     System.out.println(e.getMessage());
+                    System.out.println(line);
+                }
+
+                catch (DateTimeParseException e) {
+                    System.out.println(line);
+                    System.out.println("Sorry, I couldn't understand that date and time.");
+                    System.out.println(
+                            "Please use this exact format: 2/12/2019 1800"
+                    );
+                    System.out.println("E.g prompt: deadline return book /by 2/12/2019 1800");
                     System.out.println(line);
                 }
                 saveTasks(storage, tasks);
