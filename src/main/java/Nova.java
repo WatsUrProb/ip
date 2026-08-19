@@ -7,6 +7,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+//Imports for date-time
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+
 public class Nova {
 
     //Helper method to catch exception when doing Storage.save()
@@ -34,8 +39,9 @@ public class Nova {
         System.out.println("Type your Command Below");
         System.out.println("____________________________________________________________");
 
-        System.out.println("deadline [-description-] /by [-date-]");
-        System.out.println("event [-description-] /from [-date-] /to [-date-]");
+        String s = "dd/hh/yyyy";
+        System.out.println("deadline [-description-] /by " + s);
+        System.out.println("event [-description-] /from dd/hh/yyyy /to dd/hh/yyyy");
         System.out.println("todo [-description-]");
         System.out.println("____________________________________________________________");
 
@@ -131,48 +137,119 @@ public class Nova {
                     if (details.isEmpty()) {
                         throw new NovaException(
                                 "Your event description is missing!\n"
-                                        + "Example: event project meeting /from Mon 2pm /to 4pm"
+                                        + "Example: event project meeting /from 19/8/2026 1400 /to 19/8/2026 1600"
                         );
                     }
 
                     if (!details.contains(" /from ")) {
                         throw new NovaException(
                                 "Your event is missing '/from' information!\n"
-                                        + "Example: event project meeting /from Mon 2pm /to 4pm"
+                                        + "Example: event project meeting /from 19/8/2026 1400 /to 19/8/2026 1600"
                         );
                     }
 
                     if (!details.contains(" /to ")) {
                         throw new NovaException(
                                 "Your event is missing '/to' information!\n"
-                                        + "Example: event project meeting /from Mon 2pm /to 4pm"
+                                        + "Example: event project meeting /from 19/8/2026 1400 /to 19/8/2026 1600"
                         );
                     }
 
                     String[] fromParts = details.split(" /from ", 2);
                     String description = fromParts[0].trim();
                     String[] toParts = fromParts[1].split(" /to ", 2);
-                    String from = toParts[0].trim();
-                    String to = toParts[1].trim();
+                    String fromString = toParts[0].trim();
+                    String toString = toParts[1].trim();
 
                     if (description.isEmpty()) {
                         throw new NovaException(
                                 "Your event description is missing!"
                         );
                     }
-                    if (from.isEmpty()) {
+                    if (fromString.isEmpty()) {
                         throw new NovaException(
                                 "Your event starting time is missing!"
                         );
                     }
-                    if (to.isEmpty()) {
+                    if (toString.isEmpty()) {
                         throw new NovaException(
                                 "Your event ending time is missing!"
                         );
                     }
 
+                    // Format expected from the user
+                    DateTimeFormatter inputFormat = DateTimeFormatter.ofPattern("d/M/yyyy HHmm");
+                    LocalDateTime from = LocalDateTime.parse(fromString, inputFormat);
+                    LocalDateTime to = LocalDateTime.parse(toString, inputFormat);
+
                     tasks.add(new Event(description, from, to));
 
+
+                    System.out.println(line);
+                    System.out.println("Got it. I've added this task:");
+                    System.out.println("  " + description);
+                    System.out.println("Now you have " + tasks.size() + " tasks in the list.");
+                    System.out.println(line);
+
+                }
+                catch (DateTimeParseException e) {
+                    System.out.println(line);
+                    System.out.println("Sorry I couldn't understand the event date/time format.");
+                    System.out.println("Example: event project meeting " + "/from 19/8/2026 1400 /to 19/8/2026 1600");
+                    System.out.println(line);
+                }
+
+                catch (NovaException e) {
+                    System.out.println(line);
+                    System.out.println(e.getMessage());
+                    System.out.println(line);
+                }
+
+                saveTasks(storage, tasks);
+            }
+            //Deadline task
+            else if (input.startsWith("deadline")) {
+                try {
+                    String details = input.substring(8).trim();
+
+                    if (details.isEmpty()) {
+                        throw new NovaException(
+                                "Your deadline description is missing!\n"
+                                        + "Example: deadline return book /by 19/8/2026 1600"
+                        );
+                    }
+
+                    if (!details.contains(" /by ")) {
+                        throw new NovaException(
+                                "Your deadline is missing '/by' information!\n"
+                                        + "Example: deadline return book /by 19/8/2026 1600"
+                        );
+                    }
+
+                    String[] parts = details.split(" /by ", 2);
+
+                    String description = parts[0].trim();
+                    String byString = parts[1].trim();
+
+                    if (description.isEmpty()) {
+                        throw new NovaException(
+                                "Your deadline description is missing!\n"
+                                        + "Example: deadline return book /by 19/8/2026 1600"
+                        );
+                    }
+
+
+                    if (byString.isEmpty()) {
+                        throw new NovaException(
+                                "Your deadline date/time is missing!\n"
+                                        + "Example: deadline return book /by 19/8/2026 1600"
+                        );
+                    }
+                    //COnverting date-time String to format
+                    DateTimeFormatter inputFormat = DateTimeFormatter.ofPattern("d/M/yyyy HHmm");
+                    LocalDateTime by = LocalDateTime.parse(byString, inputFormat);
+
+                    tasks.add(new Deadline(description, by));
 
                     System.out.println(line);
                     System.out.println("Got it. I've added this task:");
@@ -186,57 +263,13 @@ public class Nova {
                     System.out.println(line);
                 }
 
-                saveTasks(storage, tasks);
-            }
-            //tasks.Deadline task
-            else if (input.startsWith("deadline")) {
-                try {
-                    String details = input.substring(8).trim();
-
-                    if (details.isEmpty()) {
-                        throw new NovaException(
-                                "Your deadline description is missing!\n"
-                                        + "Example: deadline return book /by Sunday"
-                        );
-                    }
-
-                    if (!details.contains(" /by ")) {
-                        throw new NovaException(
-                                "Your deadline is missing '/by' information!\n"
-                                        + "Example: deadline return book /by Sunday"
-                        );
-                    }
-
-                    String[] parts = details.split(" /by ", 2);
-
-                    String description = parts[0].trim();
-                    String by = parts[1].trim();
-
-                    if (description.isEmpty()) {
-                        throw new NovaException(
-                                "Your deadline description is missing!\n"
-                                        + "Example: deadline return book /by Sunday"
-                        );
-                    }
-
-                    if (by.isEmpty()) {
-                        throw new NovaException(
-                                "Your deadline date/time is missing!\n"
-                                        + "Example: deadline return book /by Sunday"
-                        );
-                    }
-
-                    tasks.add(new Deadline(description, by));
-
+                catch (DateTimeParseException e) {
                     System.out.println(line);
-                    System.out.println("Got it. I've added this task:");
-                    System.out.println("  " + description);
-                    System.out.println("Now you have " + tasks.size() + " tasks in the list.");
-                    System.out.println(line);
-
-                } catch (NovaException e) {
-                    System.out.println(line);
-                    System.out.println(e.getMessage());
+                    System.out.println("Sorry, I couldn't understand that date and time.");
+                    System.out.println(
+                            "Please use this exact format: 2/12/2019 1800"
+                    );
+                    System.out.println("E.g prompt: deadline return book /by 2/12/2019 1800");
                     System.out.println(line);
                 }
                 saveTasks(storage, tasks);

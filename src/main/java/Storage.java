@@ -1,7 +1,9 @@
 import tasks.*;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -44,22 +46,26 @@ public class Storage {
             //Default new task
             Task task ;
 
+            //Saving_Todo
             if (type.equals("T")){
                 String description = parts[2].trim();
                 task = new ToDo(description);
             }
-
+            //Saving Deadline
             else if (type.equals("D")){
                 String description = parts[2].trim();
-                String by = parts[3].trim();
+                String byString = parts[3].trim();
+                LocalDateTime by = LocalDateTime.parse(byString);
                 task = new Deadline(description, by);
             }
 
             else{
                 String description = parts[2].trim();
-                String to = parts[3].trim();
-                String from = parts[4].trim();
-                task = new Event(description, to, from);
+                 String toString = parts[3].trim();
+                 String fromString = parts[4].trim();
+                 LocalDateTime from = LocalDateTime.parse(fromString);
+                 LocalDateTime to = LocalDateTime.parse(toString);
+                task = new Event(description, from, to);
             }
 
             if (isDone){
