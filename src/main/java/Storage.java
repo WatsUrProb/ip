@@ -1,4 +1,3 @@
-import jdk.jfr.Description;
 import tasks.*;
 import java.io.File;
 import java.io.FileWriter;
@@ -7,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Storage {
-    private String filepath;
+    private final String filepath;
     public Storage(String filepath){
         this.filepath = filepath;
     }
@@ -21,7 +20,7 @@ public class Storage {
 
         FileWriter fileWriter = new FileWriter(filepath);
         for(Task task:tasks){
-            fileWriter.write(task.toString());
+            fileWriter.write(task.toFileString());
             fileWriter.write(System.lineSeparator());
         }
         fileWriter.close();
@@ -40,7 +39,7 @@ public class Storage {
             String[] parts = line.split("\\|");
 
             String type = parts[0].trim();
-            Boolean isDone = parts[1].trim().equals("X");
+            boolean isDone = parts[1].trim().equals("X");
 
             //Default new task
             Task task ;
@@ -60,7 +59,7 @@ public class Storage {
                 String description = parts[2].trim();
                 String to = parts[3].trim();
                 String from = parts[4].trim();
-                task = new Event(description, from, to);
+                task = new Event(description, to, from);
             }
 
             if (isDone){

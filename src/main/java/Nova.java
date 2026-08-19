@@ -3,10 +3,21 @@ import tasks.Event;
 import tasks.Task;
 import tasks.ToDo;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Nova {
+
+    //Helper method to catch exception when doing Storage.save()
+    private static void saveTasks(Storage storage, ArrayList<Task> tasks) {
+        try {
+            storage.save(tasks);
+        } catch (IOException e) {
+            System.out.println("NOVA couldn't save your tasks.");
+        }
+    }
+
     public static void main(String[] args) {
         String line = "____________________________________________________________";
         String banner = " _   _  _____     ___    \n"
@@ -47,9 +58,16 @@ public class Nova {
 
 
 
-
         // Create storage for tasks
-        ArrayList<Task> tasks = new ArrayList<>();
+        Storage storage = new Storage("./data/nova.txt");
+        ArrayList<Task> tasks;
+
+        try{ tasks = storage.load();
+        }
+        catch(IOException e){
+            System.out.println("NOVA couldn't load the saved tasks.");
+            tasks = new ArrayList<>();
+        }
 
 
         //creating the scanner
@@ -89,6 +107,7 @@ public class Nova {
                 System.out.println("Nice! I've marked this task as done:");
                 System.out.println("  " + tasks.get(index));
                 System.out.println(line);
+                saveTasks(storage, tasks);
             }
 
             //UNMARK feature
@@ -101,6 +120,7 @@ public class Nova {
                 System.out.println("  " + tasks.get(index));
 
                 System.out.println(line);
+                saveTasks(storage, tasks);
             }
 
             //tasks.Event task
@@ -153,6 +173,7 @@ public class Nova {
 
                     tasks.add(new Event(description, from, to));
 
+
                     System.out.println(line);
                     System.out.println("Got it. I've added this task:");
                     System.out.println("  " + description);
@@ -164,6 +185,8 @@ public class Nova {
                     System.out.println(e.getMessage());
                     System.out.println(line);
                 }
+
+                saveTasks(storage, tasks);
             }
             //tasks.Deadline task
             else if (input.startsWith("deadline")) {
@@ -216,6 +239,7 @@ public class Nova {
                     System.out.println(e.getMessage());
                     System.out.println(line);
                 }
+                saveTasks(storage, tasks);
             }
 
             //tasks.ToDo task
@@ -295,6 +319,8 @@ public class Nova {
                     System.out.println(e.getMessage());
                     System.out.println(line);
                 }
+
+                saveTasks(storage, tasks);
             }
 
             //catching subclass error
