@@ -1,41 +1,62 @@
 package nova.tasks;
 
+/**
+ * Represents a generic task with a description and completion status.
+ */
 public class Task {
+
     protected String description;
-    String line = "____________________________________________________________";
     protected boolean isDone;
 
+    /**
+     * Creates a new task with the given description.
+     * The task is initially marked as not done.
+     *
+     * @param description description of the task
+     */
     public Task(String description) {
         this.description = description;
         this.isDone = false;
     }
 
+    /**
+     * Returns the status icon of the task.
+     *
+     */
     public String getStatusIcon() {
-        return (isDone ? "X" : " "); // mark done task with X
+        return isDone ? "X" : " ";
     }
 
-    public void  markDone() {
+    /**
+     * Marks the task as completed.
+     */
+    public void markDone() {
         isDone = true;
     }
+
+    /**
+     * Marks the task as not completed.
+     */
     public void unmarkUndone() {
         isDone = false;
     }
 
-    @Override
-    public String toString() {
-        String done_status;
-        if (isDone) {
-            done_status = "[X] ";
-        }
-        else {
-            done_status = "[ ] ";
-        }
-        return done_status + this.description;
-    }
-
-    //For converting to text file
+    /**
+     * Converts the task into a format suitable for saving to a file.
+     *
+     * @return file representation of the task
+     */
     public String toFileString() {
         return "";
     }
 
+    /**
+     * Returns a user-friendly representation of the task.
+     *
+     * @return formatted task description and status
+     */
+    @Override
+    public String toString() {
+        return "[" + getStatusIcon() + "] " + description;
+    }
 }

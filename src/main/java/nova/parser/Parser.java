@@ -3,13 +3,25 @@ package nova.parser;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+
 import nova.exception.NovaException;
 
+/**
+ * Parses user input into commands and task-related information.
+ * Provides helper methods for extracting descriptions, task numbers,
+ * and date-time values from user commands.
+ */
 public class Parser {
 
     private static final DateTimeFormatter DATE_TIME_FORMAT =
             DateTimeFormatter.ofPattern("d/M/yyyy HHmm");
 
+    /**
+     * Extracts the command word from the user's input.
+     *
+     * @param input full command entered by the user
+     * @return the first word of the command, or an empty string if the input is blank
+     */
     public static String getCommandWord(String input) {
         String trimmedInput = input.trim();
 
@@ -20,6 +32,13 @@ public class Parser {
         return trimmedInput.split(" ", 2)[0];
     }
 
+    /**
+     * Extracts the description from a todo command.
+     *
+     * @param input full todo command entered by the user
+     * @return the todo description
+     * @throws NovaException if the todo description is missing
+     */
     public static String parseTodoDescription(String input)
             throws NovaException {
 
@@ -35,6 +54,14 @@ public class Parser {
         return description;
     }
 
+    /**
+     * Extracts the description and deadline date-time from a deadline command.
+     *
+     * @param input full deadline command entered by the user
+     * @return an array containing the task description at index 0
+     *         and the deadline date-time string at index 1
+     * @throws NovaException if the description or /by information is missing
+     */
     public static String[] parseDeadlineDetails(String input)
             throws NovaException {
 
@@ -74,6 +101,14 @@ public class Parser {
         return new String[]{description, byString};
     }
 
+    /**
+     * Extracts the description, start time, and end time from an event command.
+     *
+     * @param input full event command entered by the user
+     * @return an array containing the description at index 0,
+     *         start date-time at index 1, and end date-time at index 2
+     * @throws NovaException if any required event information is missing
+     */
     public static String[] parseEventDetails(String input)
             throws NovaException {
 
@@ -133,6 +168,14 @@ public class Parser {
         };
     }
 
+    /**
+     * Extracts a task number from commands such as mark, unmark, or delete.
+     *
+     * @param input full command entered by the user
+     * @param commandLength number of characters in the command word
+     * @return the task number entered by the user
+     * @throws NovaException if the task number is missing or is not a valid integer
+     */
     public static int parseTaskNumber(String input, int commandLength)
             throws NovaException {
 
@@ -155,6 +198,13 @@ public class Parser {
         }
     }
 
+    /**
+     * Converts a date-time string into a LocalDateTime object.
+     *
+     * @param dateTimeString date and time in the format d/M/yyyy HHmm
+     * @return parsed LocalDateTime value
+     * @throws NovaException if the date-time string is not in the expected format
+     */
     public static LocalDateTime parseDateTime(String dateTimeString)
             throws NovaException {
 
