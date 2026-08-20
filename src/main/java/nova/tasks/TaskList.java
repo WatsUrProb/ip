@@ -1,4 +1,4 @@
-import tasks.Task;
+package nova.tasks;
 
 import java.util.ArrayList;
 

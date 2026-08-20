@@ -1,4 +1,10 @@
-import tasks.*;
+package nova;
+
+import nova.tasks.*;
+import nova.storage.Storage;
+import nova.parser.Parser;
+import nova.ui.UI;
+import nova.exception.NovaException;
 
 import java.io.IOException;
 
@@ -17,7 +23,7 @@ public class Nova {
         try {
             tasks = new TaskList(storage.load());
         } catch (IOException e) {
-            ui.showError("Could not load saved tasks.");
+            ui.showError("Could not load saved nova.tasks.");
             tasks = new TaskList();
         }
     }
@@ -41,7 +47,7 @@ public class Nova {
                 } else if (command.equals("list")) {
 
                     ui.showMessage(
-                            "Here are the tasks in your list:\n"
+                            "Here are the nova.tasks in your list:\n"
                                     + tasks
                     );
 
@@ -66,7 +72,7 @@ public class Nova {
                                     + "  " + task
                                     + "\nNow you have "
                                     + tasks.size()
-                                    + " tasks in the list."
+                                    + " nova.tasks in the list."
                     );
 
                 } else if (command.equals("mark")) {
@@ -132,7 +138,7 @@ public class Nova {
                                     + "  " + removedTask
                                     + "\nNow you have "
                                     + tasks.size()
-                                    + " tasks in the list."
+                                    + " nova.tasks in the list."
                     );
 
                 } else {
@@ -147,7 +153,7 @@ public class Nova {
 
             } catch (IOException e) {
 
-                ui.showError("NOVA couldn't save your tasks.");
+                ui.showError("NOVA couldn't save your nova.tasks.");
             }
         }
 

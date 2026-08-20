@@ -1,4 +1,6 @@
-import tasks.*;
+package nova.storage;
+
+import nova.tasks.*;
 
 import java.io.File;
 import java.io.FileWriter;
