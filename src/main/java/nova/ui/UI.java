@@ -1,3 +1,5 @@
+package nova.ui;
+
 import java.util.Scanner;
 
 public class UI {
@@ -38,12 +40,12 @@ public class UI {
         System.out.println("Type -list- to see your history of commands");
 
         System.out.println("____________________________________________________________");
-        System.out.println("Type -mark [task_number]- to mark tasks");
+        System.out.println("Type -mark [task_number]- to mark nova.tasks");
         System.out.println("Or");
-        System.out.println("Type -unmark [task_number]- to unmark previously marked tasks");
+        System.out.println("Type -unmark [task_number]- to unmark previously marked nova.tasks");
         System.out.println(" ");
         System.out.println("____________________________________________________________");
-        System.out.println("Type -delete [task_number]- to remove tasks");
+        System.out.println("Type -delete [task_number]- to remove nova.tasks");
         System.out.println("____________________________________________________________");
     }
 
