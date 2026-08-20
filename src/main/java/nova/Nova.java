@@ -1,20 +1,33 @@
 package nova;
 
-import nova.tasks.*;
-import nova.storage.Storage;
-import nova.parser.Parser;
-import nova.ui.UI;
-import nova.exception.NovaException;
-
 import java.io.IOException;
+import java.time.LocalDateTime;
 
+import nova.exception.NovaException;
+import nova.parser.Parser;
+import nova.storage.Storage;
+import nova.tasks.Deadline;
+import nova.tasks.Event;
+import nova.tasks.Task;
+import nova.tasks.TaskList;
+import nova.tasks.ToDo;
+import nova.ui.UI;
 
+/**
+ * Main class for the NOVA chatbot.
+ * Coordinates user interaction, parsing, task management, and storage.
+ */
 public class Nova {
 
     private final Storage storage;
     private TaskList tasks;
     private final UI ui;
 
+    /**
+     * Creates a NOVA chatbot and loads saved tasks from the given file.
+     *
+     * @param filePath path to the task storage file
+     */
     public Nova(String filePath) {
 
         ui = new UI();
@@ -23,11 +36,14 @@ public class Nova {
         try {
             tasks = new TaskList(storage.load());
         } catch (IOException e) {
-            ui.showError("Could not load saved nova.tasks.");
+            ui.showError("Could not load saved tasks.");
             tasks = new TaskList();
         }
     }
 
+    /**
+     * Starts the chatbot command loop.
+     */
     public void run() {
 
         ui.showWelcome();
@@ -39,28 +55,30 @@ public class Nova {
 
             try {
 
+                // ---------------- BYE ----------------
+
                 if (command.equals("bye")) {
 
                     ui.showGoodbye();
                     break;
+                }
 
-                } else if (command.equals("list")) {
+                // ---------------- LIST ----------------
+
+                else if (command.equals("list")) {
 
                     ui.showMessage(
-                            "Here are the nova.tasks in your list:\n"
+                            "Here are the tasks in your list:\n"
                                     + tasks
                     );
+                }
 
-                } else if (command.equals("todo")) {
+                // ---------------- TODO ----------------
 
-                    String description = input.substring(4).trim();
+                else if (command.equals("todo")) {
 
-                    if (description.isEmpty()) {
-                        throw new NovaException(
-                                "Your todo description is missing.\n"
-                                        + "Example: todo read book"
-                        );
-                    }
+                    String description =
+                            Parser.parseTodoDescription(input);
 
                     Task task = new ToDo(description);
 
@@ -72,10 +90,76 @@ public class Nova {
                                     + "  " + task
                                     + "\nNow you have "
                                     + tasks.size()
-                                    + " nova.tasks in the list."
+                                    + " tasks in the list."
                     );
+                }
 
-                } else if (command.equals("mark")) {
+                // ---------------- DEADLINE ----------------
+
+                else if (command.equals("deadline")) {
+
+                    String[] deadlineParts =
+                            Parser.parseDeadlineDetails(input);
+
+                    String description = deadlineParts[0];
+
+                    LocalDateTime by =
+                            Parser.parseDateTime(deadlineParts[1]);
+
+                    Task task =
+                            new Deadline(description, by);
+
+                    tasks.add(task);
+                    storage.save(tasks.getTasks());
+
+                    ui.showMessage(
+                            "Got it. I've added this deadline:\n"
+                                    + "  " + task
+                                    + "\nNow you have "
+                                    + tasks.size()
+                                    + " tasks in the list."
+                    );
+                }
+
+                // ---------------- EVENT ----------------
+
+                else if (command.equals("event")) {
+
+                    String[] eventParts =
+                            Parser.parseEventDetails(input);
+
+                    String description = eventParts[0];
+
+                    LocalDateTime from =
+                            Parser.parseDateTime(eventParts[1]);
+
+                    LocalDateTime to =
+                            Parser.parseDateTime(eventParts[2]);
+
+                    if (to.isBefore(from)) {
+                        throw new NovaException(
+                                "Your event cannot end before it starts."
+                        );
+                    }
+
+                    Task task =
+                            new Event(description, from, to);
+
+                    tasks.add(task);
+                    storage.save(tasks.getTasks());
+
+                    ui.showMessage(
+                            "Got it. I've added this event:\n"
+                                    + "  " + task
+                                    + "\nNow you have "
+                                    + tasks.size()
+                                    + " tasks in the list."
+                    );
+                }
+
+                // ---------------- MARK ----------------
+
+                else if (command.equals("mark")) {
 
                     int taskNumber =
                             Parser.parseTaskNumber(input, 4);
@@ -95,8 +179,11 @@ public class Nova {
                             "Nice! I've marked this task as done:\n"
                                     + "  " + tasks.get(index)
                     );
+                }
 
-                } else if (command.equals("unmark")) {
+                // ---------------- UNMARK ----------------
+
+                else if (command.equals("unmark")) {
 
                     int taskNumber =
                             Parser.parseTaskNumber(input, 6);
@@ -116,8 +203,11 @@ public class Nova {
                             "OK, I've marked this task as not done yet:\n"
                                     + "  " + tasks.get(index)
                     );
+                }
 
-                } else if (command.equals("delete")) {
+                // ---------------- DELETE ----------------
+
+                else if (command.equals("delete")) {
 
                     int taskNumber =
                             Parser.parseTaskNumber(input, 6);
@@ -130,7 +220,9 @@ public class Nova {
                         );
                     }
 
-                    Task removedTask = tasks.delete(index);
+                    Task removedTask =
+                            tasks.delete(index);
+
                     storage.save(tasks.getTasks());
 
                     ui.showMessage(
@@ -138,10 +230,14 @@ public class Nova {
                                     + "  " + removedTask
                                     + "\nNow you have "
                                     + tasks.size()
-                                    + " nova.tasks in the list."
+                                    + " tasks in the list."
                     );
+                }
 
-                } else {
+                // ---------------- UNKNOWN COMMAND ----------------
+
+                else {
+
                     throw new NovaException(
                             "NOVA doesn't recognise that command."
                     );
@@ -153,13 +249,20 @@ public class Nova {
 
             } catch (IOException e) {
 
-                ui.showError("NOVA couldn't save your nova.tasks.");
+                ui.showError(
+                        "NOVA couldn't save your tasks."
+                );
             }
         }
 
         ui.close();
     }
 
+    /**
+     * Starts NOVA using the default task storage file.
+     *
+     * @param args command-line arguments
+     */
     public static void main(String[] args) {
         new Nova("./data/nova.txt").run();
     }
