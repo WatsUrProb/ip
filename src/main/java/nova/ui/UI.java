@@ -56,6 +56,7 @@ public class UI {
 
         System.out.println(line);
         System.out.println("Type -delete [task_number]- to remove tasks");
+        System.out.println("find [-keyword-]");
         System.out.println(line);
     }
 

@@ -221,4 +221,26 @@ public class Parser {
             );
         }
     }
+
+    /**
+     * Extracts the search keyword from a find command.
+     *
+     * @param input full find command entered by the user
+     * @return keyword to search for
+     * @throws NovaException if no keyword is provided
+     */
+    public static String parseFindKeyword(String input)
+            throws NovaException {
+
+        String keyword = input.substring(4).trim();
+
+        if (keyword.isEmpty()) {
+            throw new NovaException(
+                    "You forgot to tell NOVA what to find.\n"
+                            + "Example: find book"
+            );
+        }
+
+        return keyword;
+    }
 }

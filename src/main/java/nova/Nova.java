@@ -208,7 +208,6 @@ public class Nova {
                 // ---------------- DELETE ----------------
 
                 else if (command.equals("delete")) {
-
                     int taskNumber =
                             Parser.parseTaskNumber(input, 6);
 
@@ -222,9 +221,7 @@ public class Nova {
 
                     Task removedTask =
                             tasks.delete(index);
-
                     storage.save(tasks.getTasks());
-
                     ui.showMessage(
                             "Noted. I've removed this task:\n"
                                     + "  " + removedTask
@@ -234,21 +231,37 @@ public class Nova {
                     );
                 }
 
+                // ---------------- Find COMMAND ----------------
+                else if (command.equals("find")) {
+                    String keyword = Parser.parseFindKeyword(input);
+
+                    TaskList matchingTasks = tasks.find(keyword);
+
+                    if (matchingTasks.size() == 0) {
+                        ui.showMessage(
+                                "I couldn't find any tasks containing \""
+                                        + keyword + "\"."
+                        );
+                    } else {
+                        ui.showMessage(
+                                "Here are the matching tasks in your list:\n"
+                                        + matchingTasks
+                        );
+
+                    }
+                }
+
+
                 // ---------------- UNKNOWN COMMAND ----------------
 
                 else {
-
                     throw new NovaException(
                             "NOVA doesn't recognise that command."
                     );
                 }
-
             } catch (NovaException e) {
-
                 ui.showError(e.getMessage());
-
             } catch (IOException e) {
-
                 ui.showError(
                         "NOVA couldn't save your tasks."
                 );

@@ -42,6 +42,26 @@ public class TaskList {
         tasks.get(index).unmarkUndone();
     }
 
+    /**
+     * Finds tasks whose descriptions contain the given keywords
+     * @param keyword keyword to search for
+     * @return task list containing all matching tasks
+     */
+
+    public TaskList find(String keyword) {
+        TaskList matchingList = new TaskList();
+        for (Task task : tasks) {
+            if (task.getDescription()
+                    .toLowerCase()
+                    .contains(keyword.toLowerCase())) {
+                 matchingList.add(task);
+
+            }
+        }
+        return matchingList;
+    }
+
+
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
