@@ -280,3 +280,23 @@ public class Nova {
         new Nova("./data/nova.txt").run();
     }
 }
+
+//Your Mac
+//│
+//        ├── Homebrew ─────────────── installs software on your Mac
+//│       └── Bash 5
+//        │
+//        ├── zsh ──────────────────── your command-line shell
+//│
+//        ├── SDKMAN ───────────────── manages Java/JDK versions
+//│       └── Zulu JDK 25 FX ─ your Java development kit
+//│
+//        └──  NOVA project
+//        │
+//                ├── Gradle ───────── builds/manages the project
+//        │
+//                ├── JavaFX ───────── GUI framework
+//        │
+//                ├── JUnit ────────── testing framework
+//        │
+//                └── your Java code
