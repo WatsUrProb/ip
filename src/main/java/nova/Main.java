@@ -1,21 +1,28 @@
 package nova;
 
+import gui.MainWindow;
+
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
 /**
- * JavaFX application for NOVA.
+ * Main JavaFX application for NOVA.
  */
 public class Main extends Application {
 
     @Override
     public void start(Stage stage) {
-        Label helloWorld = new Label("Hello World!");
+        Nova nova =
+                new Nova("./data/nova.txt");
 
-        Scene scene = new Scene(helloWorld);
+        MainWindow mainWindow =
+                new MainWindow(nova);
 
+        Scene scene =
+                new Scene(mainWindow, 600, 500);
+
+        stage.setTitle("NOVA");
         stage.setScene(scene);
         stage.show();
     }
