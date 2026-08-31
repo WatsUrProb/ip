@@ -1,10 +1,7 @@
 package nova;
-import java.io.File;
-import java.io.FileWriter;
+
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Scanner;
 
 import nova.exception.NovaException;
 import nova.parser.Parser;
@@ -14,17 +11,15 @@ import nova.tasks.Event;
 import nova.tasks.Task;
 import nova.tasks.TaskList;
 import nova.tasks.ToDo;
-import nova.ui.UI;
 
 /**
  * Main class for the NOVA chatbot.
- * Coordinates user interaction, parsing, task management, and storage.
+ * Coordinates parsing, task management, and storage.
  */
 public class Nova {
 
     private final Storage storage;
     private TaskList tasks;
-    private final UI ui;
 
     /**
      * Creates a NOVA chatbot and loads saved tasks from the given file.
@@ -32,255 +27,282 @@ public class Nova {
      * @param filePath path to the task storage file
      */
     public Nova(String filePath) {
-
-        ui = new UI();
         storage = new Storage(filePath);
 
         try {
             tasks = new TaskList(storage.load());
         } catch (IOException e) {
-            ui.showError("Could not load saved tasks.");
             tasks = new TaskList();
         }
     }
 
     /**
-     * Starts the chatbot command loop.
+     * Processes one user command and returns NOVA's response.
+     *
+     * @param input user input
+     * @return NOVA's response
      */
-    public void run() {
+    public String getResponse(String input) {
+        String command = Parser.getCommandWord(input);
 
-        ui.showWelcome();
-
-        while (true) {
-
-            String input = ui.readCommand();
-            String command = Parser.getCommandWord(input);
-
-            try {
-
-                // ---------------- BYE ----------------
-
-                if (command.equals("bye")) {
-
-                    ui.showGoodbye();
-                    break;
-                }
-
-                // ---------------- LIST ----------------
-
-                else if (command.equals("list")) {
-
-                    ui.showMessage(
-                            "Here are the tasks in your list:\n"
-                                    + tasks
-                    );
-                }
-
-                // ---------------- TODO ----------------
-
-                else if (command.equals("todo")) {
-
-                    String description =
-                            Parser.parseTodoDescription(input);
-
-                    Task task = new ToDo(description);
-
-                    tasks.add(task);
-                    storage.save(tasks.getTasks());
-
-                    ui.showMessage(
-                            "Got it. I've added this task:\n"
-                                    + "  " + task
-                                    + "\nNow you have "
-                                    + tasks.size()
-                                    + " tasks in the list."
-                    );
-                }
-
-                // ---------------- DEADLINE ----------------
-
-                else if (command.equals("deadline")) {
-
-                    String[] deadlineParts =
-                            Parser.parseDeadlineDetails(input);
-
-                    String description = deadlineParts[0];
-
-                    LocalDateTime by =
-                            Parser.parseDateTime(deadlineParts[1]);
-
-                    Task task =
-                            new Deadline(description, by);
-
-                    tasks.add(task);
-                    storage.save(tasks.getTasks());
-
-                    ui.showMessage(
-                            "Got it. I've added this deadline:\n"
-                                    + "  " + task
-                                    + "\nNow you have "
-                                    + tasks.size()
-                                    + " tasks in the list."
-                    );
-                }
-
-                // ---------------- EVENT ----------------
-
-                else if (command.equals("event")) {
-
-                    String[] eventParts =
-                            Parser.parseEventDetails(input);
-
-                    String description = eventParts[0];
-
-                    LocalDateTime from =
-                            Parser.parseDateTime(eventParts[1]);
-
-                    LocalDateTime to =
-                            Parser.parseDateTime(eventParts[2]);
-
-                    if (to.isBefore(from)) {
-                        throw new NovaException(
-                                "Your event cannot end before it starts."
-                        );
-                    }
-
-                    Task task =
-                            new Event(description, from, to);
-
-                    tasks.add(task);
-                    storage.save(tasks.getTasks());
-
-                    ui.showMessage(
-                            "Got it. I've added this event:\n"
-                                    + "  " + task
-                                    + "\nNow you have "
-                                    + tasks.size()
-                                    + " tasks in the list."
-                    );
-                }
-
-                // ---------------- MARK ----------------
-
-                else if (command.equals("mark")) {
-
-                    int taskNumber =
-                            Parser.parseTaskNumber(input, 4);
-
-                    int index = taskNumber - 1;
-
-                    if (index < 0 || index >= tasks.size()) {
-                        throw new NovaException(
-                                "That task number does not exist."
-                        );
-                    }
-
-                    tasks.mark(index);
-                    storage.save(tasks.getTasks());
-
-                    ui.showMessage(
-                            "Nice! I've marked this task as done:\n"
-                                    + "  " + tasks.get(index)
-                    );
-                }
-
-                // ---------------- UNMARK ----------------
-
-                else if (command.equals("unmark")) {
-
-                    int taskNumber =
-                            Parser.parseTaskNumber(input, 6);
-
-                    int index = taskNumber - 1;
-
-                    if (index < 0 || index >= tasks.size()) {
-                        throw new NovaException(
-                                "That task number does not exist."
-                        );
-                    }
-
-                    tasks.unmark(index);
-                    storage.save(tasks.getTasks());
-
-                    ui.showMessage(
-                            "OK, I've marked this task as not done yet:\n"
-                                    + "  " + tasks.get(index)
-                    );
-                }
-
-                // ---------------- DELETE ----------------
-
-                else if (command.equals("delete")) {
-                    int taskNumber =
-                            Parser.parseTaskNumber(input, 6);
-
-                    int index = taskNumber - 1;
-
-                    if (index < 0 || index >= tasks.size()) {
-                        throw new NovaException(
-                                "That task number does not exist."
-                        );
-                    }
-
-                    Task removedTask =
-                            tasks.delete(index);
-                    storage.save(tasks.getTasks());
-                    ui.showMessage(
-                            "Noted. I've removed this task:\n"
-                                    + "  " + removedTask
-                                    + "\nNow you have "
-                                    + tasks.size()
-                                    + " tasks in the list."
-                    );
-                }
-
-                // ---------------- Find COMMAND ----------------
-                else if (command.equals("find")) {
-                    String keyword = Parser.parseFindKeyword(input);
-
-                    TaskList matchingTasks = tasks.find(keyword);
-
-                    if (matchingTasks.size() == 0) {
-                        ui.showMessage(
-                                "I couldn't find any tasks containing \""
-                                        + keyword + "\"."
-                        );
-                    } else {
-                        ui.showMessage(
-                                "Here are the matching tasks in your list:\n"
-                                        + matchingTasks
-                        );
-
-                    }
-                }
-
-
-                // ---------------- UNKNOWN COMMAND ----------------
-
-                else {
-                    throw new NovaException(
-                            "NOVA doesn't recognise that command."
-                    );
-                }
-            } catch (NovaException e) {
-                ui.showError(e.getMessage());
-            } catch (IOException e) {
-                ui.showError(
-                        "NOVA couldn't save your tasks."
+        try {
+            if (command.equals("bye")) {
+                return "Bye! Hope to see you again soon!";
+            } else if (command.equals("list")) {
+                return getListResponse();
+            } else if (command.equals("todo")) {
+                return addTodo(input);
+            } else if (command.equals("deadline")) {
+                return addDeadline(input);
+            } else if (command.equals("event")) {
+                return addEvent(input);
+            } else if (command.equals("mark")) {
+                return markTask(input);
+            } else if (command.equals("unmark")) {
+                return unmarkTask(input);
+            } else if (command.equals("delete")) {
+                return deleteTask(input);
+            } else if (command.equals("find")) {
+                return findTasks(input);
+            } else {
+                throw new NovaException(
+                        "NOVA doesn't recognise that command."
                 );
             }
+        } catch (NovaException e) {
+            return e.getMessage();
+        } catch (IOException e) {
+            return "NOVA couldn't save your tasks.";
         }
-
-        ui.close();
     }
 
     /**
-     * Starts NOVA using the default task storage file.
+     * Returns the current task list.
      *
-     * @param args command-line arguments
+     * @return task list response
      */
-    public static void main(String[] args) {
-        new Nova("./data/nova.txt").run();
+    private String getListResponse() {
+        return "Here are the tasks in your list:\n" + tasks;
+    }
+
+    /**
+     * Adds a todo task.
+     *
+     * @param input user input
+     * @return response message
+     * @throws NovaException if the input is invalid
+     * @throws IOException if the task cannot be saved
+     */
+    private String addTodo(String input)
+            throws NovaException, IOException {
+
+        String description = Parser.parseTodoDescription(input);
+
+        Task task = new ToDo(description);
+
+        tasks.add(task);
+        storage.save(tasks.getTasks());
+
+        return "Got it. I've added this task:\n"
+                + "  " + task
+                + "\nNow you have "
+                + tasks.size()
+                + " tasks in the list.";
+    }
+
+    /**
+     * Adds a deadline task.
+     *
+     * @param input user input
+     * @return response message
+     * @throws NovaException if the input is invalid
+     * @throws IOException if the task cannot be saved
+     */
+    private String addDeadline(String input)
+            throws NovaException, IOException {
+
+        String[] deadlineParts =
+                Parser.parseDeadlineDetails(input);
+
+        String description = deadlineParts[0];
+
+        LocalDateTime by =
+                Parser.parseDateTime(deadlineParts[1]);
+
+        Task task =
+                new Deadline(description, by);
+
+        tasks.add(task);
+        storage.save(tasks.getTasks());
+
+        return "Got it. I've added this deadline:\n"
+                + "  " + task
+                + "\nNow you have "
+                + tasks.size()
+                + " tasks in the list.";
+    }
+
+    /**
+     * Adds an event task.
+     *
+     * @param input user input
+     * @return response message
+     * @throws NovaException if the input is invalid
+     * @throws IOException if the task cannot be saved
+     */
+    private String addEvent(String input)
+            throws NovaException, IOException {
+
+        String[] eventParts =
+                Parser.parseEventDetails(input);
+
+        String description = eventParts[0];
+
+        LocalDateTime from =
+                Parser.parseDateTime(eventParts[1]);
+
+        LocalDateTime to =
+                Parser.parseDateTime(eventParts[2]);
+
+        if (to.isBefore(from)) {
+            throw new NovaException(
+                    "Your event cannot end before it starts."
+            );
+        }
+
+        Task task =
+                new Event(description, from, to);
+
+        tasks.add(task);
+        storage.save(tasks.getTasks());
+
+        return "Got it. I've added this event:\n"
+                + "  " + task
+                + "\nNow you have "
+                + tasks.size()
+                + " tasks in the list.";
+    }
+
+    /**
+     * Marks a task as done.
+     *
+     * @param input user input
+     * @return response message
+     * @throws NovaException if the task number is invalid
+     * @throws IOException if the task cannot be saved
+     */
+    private String markTask(String input)
+            throws NovaException, IOException {
+
+        int taskNumber =
+                Parser.parseTaskNumber(input, 4);
+
+        int index = taskNumber - 1;
+
+        validateTaskIndex(index);
+
+        tasks.mark(index);
+        storage.save(tasks.getTasks());
+
+        return "Nice! I've marked this task as done:\n"
+                + "  " + tasks.get(index);
+    }
+
+    /**
+     * Marks a task as not done.
+     *
+     * @param input user input
+     * @return response message
+     * @throws NovaException if the task number is invalid
+     * @throws IOException if the task cannot be saved
+     */
+    private String unmarkTask(String input)
+            throws NovaException, IOException {
+
+        int taskNumber =
+                Parser.parseTaskNumber(input, 6);
+
+        int index = taskNumber - 1;
+
+        validateTaskIndex(index);
+
+        tasks.unmark(index);
+        storage.save(tasks.getTasks());
+
+        return "OK, I've marked this task as not done yet:\n"
+                + "  " + tasks.get(index);
+    }
+
+    /**
+     * Deletes a task.
+     *
+     * @param input user input
+     * @return response message
+     * @throws NovaException if the task number is invalid
+     * @throws IOException if the task cannot be saved
+     */
+    private String deleteTask(String input)
+            throws NovaException, IOException {
+
+        int taskNumber =
+                Parser.parseTaskNumber(input, 6);
+
+        int index = taskNumber - 1;
+
+        validateTaskIndex(index);
+
+        Task removedTask =
+                tasks.delete(index);
+
+        storage.save(tasks.getTasks());
+
+        return "Noted. I've removed this task:\n"
+                + "  " + removedTask
+                + "\nNow you have "
+                + tasks.size()
+                + " tasks in the list.";
+    }
+
+    /**
+     * Finds tasks containing the given keyword.
+     *
+     * @param input user input
+     * @return response message
+     * @throws NovaException if the input is invalid
+     */
+    private String findTasks(String input)
+            throws NovaException {
+
+        String keyword =
+                Parser.parseFindKeyword(input);
+
+        TaskList matchingTasks =
+                tasks.find(keyword);
+
+        if (matchingTasks.size() == 0) {
+            return "I couldn't find any tasks containing \""
+                    + keyword
+                    + "\".";
+        }
+
+        return "Here are the matching tasks in your list:\n"
+                + matchingTasks;
+    }
+
+    /**
+     * Checks whether the given task index exists.
+     *
+     * @param index task index
+     * @throws NovaException if the index is invalid
+     */
+    private void validateTaskIndex(int index)
+            throws NovaException {
+
+        if (index < 0 || index >= tasks.size()) {
+            throw new NovaException(
+                    "That task number does not exist."
+            );
+        }
     }
 }
 
