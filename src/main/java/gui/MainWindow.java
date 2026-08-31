@@ -77,16 +77,19 @@ public class MainWindow extends BorderPane {
     }
 
     private void addUserMessage(String message) {
-        Label label = new Label("You: " + message);
-        label.setWrapText(true);
-
-        dialogContainer.getChildren().add(label);
+        DialogBox dialogBox =
+                new DialogBox(message, true);
+        dialogContainer
+                .getChildren()
+                .add(dialogBox);
     }
 
     private void addNovaMessage(String message) {
-        Label label = new Label("Nova: " + message);
-        label.setWrapText(true);
+        DialogBox dialogBox =
+                new DialogBox(message, false);
 
-        dialogContainer.getChildren().add(label);
+        dialogContainer
+                .getChildren()
+                .add(dialogBox);
     }
 }
