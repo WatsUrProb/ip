@@ -23,6 +23,8 @@ public class TaskList {
     }
 
     public Task get(int index) {
+        assert index >= 0 && index < tasks.size()
+                : "Task index should be within task list bounds";
         return tasks.get(index);
     }
 
