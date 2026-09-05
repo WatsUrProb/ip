@@ -52,14 +52,14 @@ public class TaskList {
 
     public TaskList find(String keyword) {
         TaskList matchingList = new TaskList();
-        for (Task task : tasks) {
-            if (task.getDescription()
-                    .toLowerCase()
-                    .contains(keyword.toLowerCase())) {
-                 matchingList.add(task);
+        String lowerCaseKeyword = keyword.toLowerCase();
 
-            }
-        }
+        tasks.stream()
+                .filter(task -> task.getDescription()
+                        .toLowerCase()
+                        .contains(lowerCaseKeyword))
+                .forEach(matchingList::add);
+
         return matchingList;
     }
 
