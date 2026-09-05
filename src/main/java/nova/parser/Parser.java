@@ -13,6 +13,11 @@ import nova.exception.NovaException;
  */
 public class Parser {
 
+    private static final String TODO_COMMAND = "todo";
+    private static final String DEADLINE_COMMAND = "deadline";
+    private static final String EVENT_COMMAND = "event";
+    private static final String FIND_COMMAND = "find";
+
     private static final DateTimeFormatter DATE_TIME_FORMAT =
             DateTimeFormatter.ofPattern("d/M/yyyy HHmm");
 
@@ -42,7 +47,8 @@ public class Parser {
     public static String parseTodoDescription(String input)
             throws NovaException {
 
-        String description = input.substring(4).trim();
+        String description =
+                input.substring(TODO_COMMAND.length()).trim();
 
         if (description.isEmpty()) {
             throw new NovaException(
@@ -65,7 +71,8 @@ public class Parser {
     public static String[] parseDeadlineDetails(String input)
             throws NovaException {
 
-        String details = input.substring(8).trim();
+        String details =
+                input.substring(DEADLINE_COMMAND.length()).trim();
 
         if (details.isEmpty()) {
             throw new NovaException(
@@ -112,7 +119,8 @@ public class Parser {
     public static String[] parseEventDetails(String input)
             throws NovaException {
 
-        String details = input.substring(5).trim();
+        String details =
+                input.substring(EVENT_COMMAND.length()).trim();
 
         if (details.isEmpty()) {
             throw new NovaException(
@@ -232,7 +240,8 @@ public class Parser {
     public static String parseFindKeyword(String input)
             throws NovaException {
 
-        String keyword = input.substring(4).trim();
+        String keyword =
+                input.substring(FIND_COMMAND.length()).trim();
 
         if (keyword.isEmpty()) {
             throw new NovaException(
