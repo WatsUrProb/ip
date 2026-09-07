@@ -1,3 +1,5 @@
 D | O | e return book | 2019-12-02T18:00
 T | O |homework
 T | O |finish CS2103T tutorial
+E | O | lecture | 2026-09-10T10:00 | 2026-09-10T12:00
+E | O | meeting | 2026-09-10T11:00 | 2026-09-10T13:00

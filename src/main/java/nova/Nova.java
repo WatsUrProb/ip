@@ -152,17 +152,11 @@ public class Nova {
      */
     private String addEvent(String input)
             throws NovaException, IOException {
-
-        String[] eventParts =
-                Parser.parseEventDetails(input);
-
+        String[] eventParts = Parser.parseEventDetails(input);
         String description = eventParts[0];
 
-        LocalDateTime from =
-                Parser.parseDateTime(eventParts[1]);
-
-        LocalDateTime to =
-                Parser.parseDateTime(eventParts[2]);
+        LocalDateTime from = Parser.parseDateTime(eventParts[1]);
+        LocalDateTime to = Parser.parseDateTime(eventParts[2]);
 
         if (to.isBefore(from)) {
             throw new NovaException(
@@ -170,19 +164,27 @@ public class Nova {
             );
         }
 
-        Task task =
-                new Event(description, from, to);
+        Event event = new Event(description, from, to);
 
-        tasks.add(task);
+        Event clashingEvent = tasks.findClashingEvent(event);
+
+        tasks.add(event);
         storage.save(tasks.getTasks());
 
-        return "Got it. I've added this event:\n"
-                + "  " + task
-                + "\nNow you have "
-                + tasks.size()
-                + " tasks in the list.";
-    }
+        String response =
+                "Got it. I've added this event:\n"
+                        + "  " + event
+                        + "\nNow you have "
+                        + tasks.size()
+                        + " tasks in the list.";
 
+        if (clashingEvent != null) {
+            response += "\nWarning! This event clashes with:\n"
+                    + "  " + clashingEvent;
+        }
+
+        return response;
+    }
     /**
      * Marks a task as done.
      *
