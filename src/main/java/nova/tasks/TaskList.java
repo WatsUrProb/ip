@@ -63,6 +63,32 @@ public class TaskList {
         return matchingList;
     }
 
+    /**
+     * Finds an existing event that clashes with the given event.
+     *
+     * @param newEvent event to check
+     * @return clashing event, or null if no clash exists
+     */
+    public Event findClashingEvent(Event newEvent) {
+        for (Task task : tasks) {
+            if (!(task instanceof Event)) {
+                continue;
+            }
+
+            Event existingEvent = (Event) task;
+
+            boolean isClashing =
+                    existingEvent.getFrom().isBefore(newEvent.getTo())
+                            && newEvent.getFrom().isBefore(existingEvent.getTo());
+
+            if (isClashing) {
+                return existingEvent;
+            }
+        }
+
+        return null;
+    }
+
 
     @Override
     public String toString() {

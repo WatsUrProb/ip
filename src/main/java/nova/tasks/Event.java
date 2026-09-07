@@ -14,6 +14,14 @@ public class Event extends Task {
         this.to = to;
     }
 
+    public LocalDateTime getFrom() {
+        return from;
+    }
+
+    public LocalDateTime getTo() {
+        return to;
+    }
+
     @Override
     public String toString() {
 
