@@ -1,6 +1,7 @@
 package nova.tasks;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 public class Deadline extends Task {
 
@@ -16,7 +17,11 @@ public class Deadline extends Task {
 
     @Override
     public String toString() {
-        DateTimeFormatter outputFormat = DateTimeFormatter.ofPattern("MMM dd yyyy, h:mm a");
+        DateTimeFormatter outputFormat =
+                DateTimeFormatter.ofPattern(
+                        "MMM dd yyyy, h:mm a",
+                        Locale.ENGLISH
+                );
 
         return "[D]"+super.toString()+" (by: "+by.format(outputFormat) +")";
     }
