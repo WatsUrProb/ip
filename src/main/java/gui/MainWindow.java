@@ -86,11 +86,20 @@ public class MainWindow extends BorderPane {
 
         if (nova.wasLastResponseError()) {
             addErrorMessage(response);
+        } else if (nova.wasLastResponseWarning()) {
+            addWarningMessage(response);
         } else {
             addNovaMessage(response);
         }
 
         userInput.clear();
+    }
+
+    private void addWarningMessage(String message) {
+        DialogBox dialogBox =
+                new DialogBox("⚠ " + message, DialogType.WARNING);
+
+        dialogContainer.getChildren().add(dialogBox);
     }
 
 

@@ -16,7 +16,8 @@ public class DialogBox extends HBox {
     public enum DialogType {
         USER,
         NOVA,
-        ERROR
+        ERROR,
+        WARNING
     }
 
     private final Label message;
@@ -55,6 +56,16 @@ public class DialogBox extends HBox {
                 );
                 break;
 
+            case WARNING:
+                setAlignment(Pos.CENTER_LEFT);
+                message.setMaxWidth(480);
+                message.setStyle(
+                        "-fx-background-color: #fef3c7;"
+                                + "-fx-text-fill: #92400e;"
+                                + "-fx-background-radius: 12;"
+                );
+                break;
+
             case NOVA:
             default:
                 setAlignment(Pos.CENTER_LEFT);
@@ -64,6 +75,7 @@ public class DialogBox extends HBox {
                                 + "-fx-background-radius: 12;"
                 );
                 break;
+
         }
 
         getChildren().add(message);
