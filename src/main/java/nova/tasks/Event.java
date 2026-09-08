@@ -2,6 +2,7 @@ package nova.tasks;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 public class Event extends Task {
 
@@ -26,7 +27,10 @@ public class Event extends Task {
     public String toString() {
 
         DateTimeFormatter outputFormat =
-                DateTimeFormatter.ofPattern("MMM dd yyyy, h:mm a");
+                DateTimeFormatter.ofPattern(
+                        "MMM dd yyyy, h:mm a",
+                        Locale.ENGLISH
+                );
 
         return "[E]" + super.toString()
                 + " (from: " + from.format(outputFormat)
