@@ -37,6 +37,7 @@ public class DialogBox extends HBox {
         switch (type) {
             case USER:
                 setAlignment(Pos.CENTER_RIGHT);
+                message.setMaxWidth(300);
                 message.setStyle(
                         "-fx-background-color: #dbeafe;"
                                 + "-fx-background-radius: 12;"
@@ -45,6 +46,7 @@ public class DialogBox extends HBox {
 
             case ERROR:
                 setAlignment(Pos.CENTER_LEFT);
+                message.setMaxWidth(480);
                 message.setStyle(
                         "-fx-background-color: #fee2e2;"
                                 + "-fx-text-fill: #991b1b;"
@@ -56,6 +58,7 @@ public class DialogBox extends HBox {
             case NOVA:
             default:
                 setAlignment(Pos.CENTER_LEFT);
+                message.setMaxWidth(480);
                 message.setStyle(
                         "-fx-background-color: #eeeeee;"
                                 + "-fx-background-radius: 12;"

@@ -20,6 +20,7 @@ public class Nova {
 
     private final Storage storage;
     private TaskList tasks;
+    private boolean lastResponseWasError = false;
 
     /**
      * Creates a NOVA chatbot and loads saved tasks from the given file.
@@ -44,6 +45,7 @@ public class Nova {
      */
     public String getResponse(String input) {
         String command = Parser.getCommandWord(input);
+        lastResponseWasError = false;
 
         try {
             if (command.equals("bye")) {
@@ -70,8 +72,10 @@ public class Nova {
                 );
             }
         } catch (NovaException e) {
+            lastResponseWasError = true;
             return e.getMessage();
         } catch (IOException e) {
+            lastResponseWasError = true;
             return "NOVA couldn't save your tasks.";
         }
     }
@@ -305,6 +309,15 @@ public class Nova {
                     "That task number does not exist."
             );
         }
+    }
+
+    /**
+     * Returns whether the previous response was an error.
+     *
+     * @return true if the previous response was an error
+     */
+    public boolean wasLastResponseError() {
+        return lastResponseWasError;
     }
 }
 

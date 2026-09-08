@@ -30,8 +30,10 @@ public class MainWindow extends BorderPane {
     public MainWindow(Nova nova) {
         this.nova = nova;
 
-        dialogContainer = new VBox(10);
-        dialogContainer.setPadding(new Insets(12));
+
+
+        dialogContainer = new VBox(14);
+        dialogContainer.setPadding(new Insets(16));
 
         scrollPane = new ScrollPane(dialogContainer);
         scrollPane.setFitToWidth(true);
@@ -39,16 +41,18 @@ public class MainWindow extends BorderPane {
 
         userInput = new TextField();
         userInput.setPromptText("Enter a command...");
+        userInput.setPrefHeight(38);
 
         sendButton = new Button("Send");
         sendButton.setDefaultButton(true);
+        sendButton.setPrefHeight(38);
+        sendButton.setPadding(new Insets(8, 16, 8, 16));
+
 
         BorderPane inputArea = new BorderPane();
         inputArea.setCenter(userInput);
         inputArea.setRight(sendButton);
         inputArea.setPadding(new Insets(10));
-        inputArea.setMargin(sendButton, new Insets(0, 0, 0, 8));
-
         setCenter(scrollPane);
         setBottom(inputArea);
 
@@ -80,7 +84,7 @@ public class MainWindow extends BorderPane {
 
         String response = nova.getResponse(input);
 
-        if (isErrorResponse(response)) {
+        if (nova.wasLastResponseError()) {
             addErrorMessage(response);
         } else {
             addNovaMessage(response);
@@ -89,14 +93,6 @@ public class MainWindow extends BorderPane {
         userInput.clear();
     }
 
-    private boolean isErrorResponse(String response) {
-        String lowerCaseResponse = response.toLowerCase();
-
-        return lowerCaseResponse.contains("sorry")
-                || lowerCaseResponse.contains("error")
-                || lowerCaseResponse.contains("cannot")
-                || lowerCaseResponse.contains("invalid");
-    }
 
     private void addUserMessage(String message) {
         DialogBox dialogBox =
