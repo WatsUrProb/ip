@@ -106,5 +106,19 @@ public class EventTest {
 
         assertNull(taskList.findClashingEvent(newEvent));
     }
+
+    @Test
+    public void toString_validEvent_returnsFormattedEvent() {
+        Event event = new Event(
+                "lecture",
+                LocalDateTime.of(2026, 9, 10, 10, 0),
+                LocalDateTime.of(2026, 9, 10, 12, 0));
+
+        assertEquals(
+                "[E][ ] lecture "
+                        + "(from: Sep 10 2026, 10:00 AM "
+                        + "to: Sep 10 2026, 12:00 PM)",
+                event.toString());
+    }
 }
 
