@@ -25,10 +25,14 @@ public class Event extends Task {
     @Override
     public String toString() {
 
-        DateTimeFormatter outputFormat = DateTimeFormatter.ofPattern("MMM dd yyyy, h:mm a");
+        DateTimeFormatter outputFormat =
+                DateTimeFormatter.ofPattern("MMM dd yyyy, h:mm a");
 
-        return "[E]" + super.toString() + " (from: " + from.format(outputFormat) + " to: " + to + to.format(outputFormat)+")";
+        return "[E]" + super.toString()
+                + " (from: " + from.format(outputFormat)
+                + " to: " + to.format(outputFormat) + ")";
     }
+
 
     @Override
     public String toFileString() {

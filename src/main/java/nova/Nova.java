@@ -20,8 +20,8 @@ public class Nova {
 
     private final Storage storage;
     private TaskList tasks;
-
-    /**
+    private boolean lastResponseWasError = false;
+    private boolean lastResponseWasWarning = false;    /**
      * Creates a NOVA chatbot and loads saved tasks from the given file.
      *
      * @param filePath path to the task storage file
@@ -44,34 +44,39 @@ public class Nova {
      */
     public String getResponse(String input) {
         String command = Parser.getCommandWord(input);
+        lastResponseWasError = false;
+        lastResponseWasWarning = false;
 
         try {
-            if (command.equals("bye")) {
-                return "Bye! Hope to see you again soon!";
-            } else if (command.equals("list")) {
-                return getListResponse();
-            } else if (command.equals("todo")) {
-                return addTodo(input);
-            } else if (command.equals("deadline")) {
-                return addDeadline(input);
-            } else if (command.equals("event")) {
-                return addEvent(input);
-            } else if (command.equals("mark")) {
-                return markTask(input);
-            } else if (command.equals("unmark")) {
-                return unmarkTask(input);
-            } else if (command.equals("delete")) {
-                return deleteTask(input);
-            } else if (command.equals("find")) {
-                return findTasks(input);
-            } else {
-                throw new NovaException(
-                        "NOVA doesn't recognise that command."
-                );
+            switch (command) {
+                case "bye":
+                    return "Bye! Hope to see you again soon!";
+                case "list":
+                    return getListResponse();
+                case "todo":
+                    return addTodo(input);
+                case "deadline":
+                    return addDeadline(input);
+                case "event":
+                    return addEvent(input);
+                case "mark":
+                    return markTask(input);
+                case "unmark":
+                    return unmarkTask(input);
+                case "delete":
+                    return deleteTask(input);
+                case "find":
+                    return findTasks(input);
+                default:
+                    throw new NovaException(
+                            "NOVA doesn't recognise that command."
+                    );
             }
         } catch (NovaException e) {
+            lastResponseWasError = true;
             return e.getMessage();
         } catch (IOException e) {
+            lastResponseWasError = true;
             return "NOVA couldn't save your tasks.";
         }
     }
@@ -179,10 +184,11 @@ public class Nova {
                         + " tasks in the list.";
 
         if (clashingEvent != null) {
+            lastResponseWasWarning = true;
+
             response += "\nWarning! This event clashes with:\n"
                     + "  " + clashingEvent;
         }
-
         return response;
     }
     /**
@@ -306,7 +312,28 @@ public class Nova {
             );
         }
     }
+
+    /**
+     * Returns whether the previous response was an error.
+     *
+     * @return true if the previous response was an error
+     */
+    public boolean wasLastResponseError() {
+        return lastResponseWasError;
+    }
+
+
+    /**
+     * Returns whether the previous response contained a warning.
+     *
+     * @return true if the previous response contained a warning
+     */
+    public boolean wasLastResponseWarning() {
+        return lastResponseWasWarning;
+    }
 }
+
+
 
 //Your Mac
 //│

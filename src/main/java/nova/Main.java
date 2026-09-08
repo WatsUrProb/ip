@@ -24,6 +24,9 @@ public class Main extends Application {
 
         stage.setTitle("NOVA");
         stage.setScene(scene);
+        stage.setMinWidth(450);
+        stage.setMinHeight(500);
+        stage.setResizable(true);
         stage.show();
     }
 }
