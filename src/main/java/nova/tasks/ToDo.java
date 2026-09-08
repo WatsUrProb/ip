@@ -12,6 +12,6 @@ public class ToDo extends Task {
 
     @Override
     public String toFileString() {
-        return "T | " + (isDone ? "X" : "O"+ " |" + description);
+        return "T | " + (isDone ? "X" : "O")+ " | " + description;
     }
 }
