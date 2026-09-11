@@ -105,7 +105,7 @@ public class Parser {
             );
         }
 
-        return new String[]{description, byString};
+        return new String[] {description, byString};
     }
 
     /**
@@ -169,11 +169,8 @@ public class Parser {
             );
         }
 
-        return new String[]{
-                description,
-                fromString,
-                toString
-        };
+        return new String[] {description, fromString, toString};
+
     }
 
     /**
@@ -253,3 +250,4 @@ public class Parser {
         return keyword;
     }
 }
+

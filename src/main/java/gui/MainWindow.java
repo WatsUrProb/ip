@@ -1,15 +1,13 @@
 package gui;
 
+import gui.DialogBox.DialogType;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
-
-import gui.DialogBox.DialogType;
 import nova.Nova;
-
 /**
  * Main GUI window for Nova.
  */
@@ -59,10 +57,8 @@ public class MainWindow extends BorderPane {
         sendButton.setOnAction(event -> handleUserInput());
         userInput.setOnAction(event -> handleUserInput());
 
-        dialogContainer.heightProperty().addListener(
-                (observable, oldValue, newValue) ->
-                        scrollPane.setVvalue(1.0)
-        );
+        dialogContainer.heightProperty().addListener((observable, oldValue, newValue) ->
+                scrollPane.setVvalue(1.0));
 
         addNovaMessage(
                 "Hello! I'm Nova.\n"
@@ -124,3 +120,4 @@ public class MainWindow extends BorderPane {
         dialogContainer.getChildren().add(dialogBox);
     }
 }
+

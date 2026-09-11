@@ -21,7 +21,9 @@ public class Nova {
     private final Storage storage;
     private TaskList tasks;
     private boolean lastResponseWasError = false;
-    private boolean lastResponseWasWarning = false;    /**
+    private boolean lastResponseWasWarning = false;
+
+    /**
      * Creates a NOVA chatbot and loads saved tasks from the given file.
      *
      * @param filePath path to the task storage file
@@ -69,8 +71,7 @@ public class Nova {
                     return findTasks(input);
                 default:
                     throw new NovaException(
-                            "NOVA doesn't recognise that command."
-                    );
+                            "NOVA doesn't recognise that command.");
             }
         } catch (NovaException e) {
             lastResponseWasError = true;
@@ -126,16 +127,13 @@ public class Nova {
     private String addDeadline(String input)
             throws NovaException, IOException {
 
-        String[] deadlineParts =
-                Parser.parseDeadlineDetails(input);
+        String[] deadlineParts = Parser.parseDeadlineDetails(input);
 
         String description = deadlineParts[0];
 
-        LocalDateTime by =
-                Parser.parseDateTime(deadlineParts[1]);
+        LocalDateTime by = Parser.parseDateTime(deadlineParts[1]);
 
-        Task task =
-                new Deadline(description, by);
+        Task task = new Deadline(description, by);
 
         tasks.add(task);
         storage.save(tasks.getTasks());
@@ -157,6 +155,7 @@ public class Nova {
      */
     private String addEvent(String input)
             throws NovaException, IOException {
+
         String[] eventParts = Parser.parseEventDetails(input);
         String description = eventParts[0];
 
@@ -165,12 +164,10 @@ public class Nova {
 
         if (to.isBefore(from)) {
             throw new NovaException(
-                    "Your event cannot end before it starts."
-            );
+                    "Your event cannot end before it starts.");
         }
 
         Event event = new Event(description, from, to);
-
         Event clashingEvent = tasks.findClashingEvent(event);
 
         tasks.add(event);
@@ -189,8 +186,10 @@ public class Nova {
             response += "\nWarning! This event clashes with:\n"
                     + "  " + clashingEvent;
         }
+
         return response;
     }
+
     /**
      * Marks a task as done.
      *
@@ -202,9 +201,7 @@ public class Nova {
     private String markTask(String input)
             throws NovaException, IOException {
 
-        int taskNumber =
-                Parser.parseTaskNumber(input, 4);
-
+        int taskNumber = Parser.parseTaskNumber(input, 4);
         int index = taskNumber - 1;
 
         validateTaskIndex(index);
@@ -227,9 +224,7 @@ public class Nova {
     private String unmarkTask(String input)
             throws NovaException, IOException {
 
-        int taskNumber =
-                Parser.parseTaskNumber(input, 6);
-
+        int taskNumber = Parser.parseTaskNumber(input, 6);
         int index = taskNumber - 1;
 
         validateTaskIndex(index);
@@ -252,15 +247,12 @@ public class Nova {
     private String deleteTask(String input)
             throws NovaException, IOException {
 
-        int taskNumber =
-                Parser.parseTaskNumber(input, 6);
-
+        int taskNumber = Parser.parseTaskNumber(input, 6);
         int index = taskNumber - 1;
 
         validateTaskIndex(index);
 
-        Task removedTask =
-                tasks.delete(index);
+        Task removedTask = tasks.delete(index);
 
         storage.save(tasks.getTasks());
 
@@ -281,11 +273,9 @@ public class Nova {
     private String findTasks(String input)
             throws NovaException {
 
-        String keyword =
-                Parser.parseFindKeyword(input);
+        String keyword = Parser.parseFindKeyword(input);
 
-        TaskList matchingTasks =
-                tasks.find(keyword);
+        TaskList matchingTasks = tasks.find(keyword);
 
         if (matchingTasks.size() == 0) {
             return "I couldn't find any tasks containing \""
@@ -308,8 +298,7 @@ public class Nova {
 
         if (index < 0 || index >= tasks.size()) {
             throw new NovaException(
-                    "That task number does not exist."
-            );
+                    "That task number does not exist.");
         }
     }
 
@@ -322,7 +311,6 @@ public class Nova {
         return lastResponseWasError;
     }
 
-
     /**
      * Returns whether the previous response contained a warning.
      *
@@ -332,25 +320,3 @@ public class Nova {
         return lastResponseWasWarning;
     }
 }
-
-
-
-//Your Mac
-//│
-//        ├── Homebrew ─────────────── installs software on your Mac
-//│       └── Bash 5
-//        │
-//        ├── zsh ──────────────────── your command-line shell
-//│
-//        ├── SDKMAN ───────────────── manages Java/JDK versions
-//│       └── Zulu JDK 25 FX ─ your Java development kit
-//│
-//        └──  NOVA project
-//        │
-//                ├── Gradle ───────── builds/manages the project
-//        │
-//                ├── JavaFX ───────── GUI framework
-//        │
-//                ├── JUnit ────────── testing framework
-//        │
-//                └── your Java code
